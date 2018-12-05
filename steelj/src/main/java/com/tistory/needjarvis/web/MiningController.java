@@ -73,6 +73,7 @@ public class MiningController {
 	}
 	
 	
+	
 	/**
 	 * 마이닝을 시작한다.
 	 * 
