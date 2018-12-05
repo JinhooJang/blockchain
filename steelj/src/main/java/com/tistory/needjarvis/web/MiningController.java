@@ -3,10 +3,15 @@ package com.tistory.needjarvis.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.tistory.needjarvis.module.CryptoModule;
+import com.tistory.needjarvis.module.MiningModule;
+import com.tistory.needjarvis.service.WalletService;
 
 
 
@@ -23,6 +28,11 @@ public class MiningController {
 	
 	private boolean miningFlag = false;
 	
+	public String hashing;
+	
+	@Autowired
+	private CryptoModule cryptoModule;
+	
 	
 	/**
 	 * 마이닝 페이지 호출
@@ -35,7 +45,7 @@ public class MiningController {
 		
 		model.addAttribute("isMining", miningFlag);
 		
-		// 마이닝의 레벨을 가져온다.
+		
 		
 		return "mining";
 	}
@@ -50,7 +60,14 @@ public class MiningController {
 	public String start(Model model) {
 		LOGGER.info("start mine!!!");
 		miningFlag = true;
-		// 마이닝의 레벨을 가져온다.
+		
+		// 마이닝을 수행한다.
+		String hashed = cryptoModule.getHashed();
+		MiningModule module = new MiningModule(hashed);		
+		module.start();
+		
+		model.addAttribute("isMining", miningFlag);
+		model.addAttribute("hashed", hashed);
 		
 		return "jsonView";
 	}

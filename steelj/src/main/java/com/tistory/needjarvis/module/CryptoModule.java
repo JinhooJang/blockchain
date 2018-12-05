@@ -1,6 +1,16 @@
 package com.tistory.needjarvis.module;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -54,4 +64,129 @@ public class CryptoModule {
 		
 		return id;
     }
+    
+    
+    /**
+     * 결과 체크
+     *  
+     * @param str
+     * @return
+     */
+    public boolean isCorrect(String str) {
+    	int len = 2;
+    	
+    	// 0.1초마다 요청을 하기 때문에...
+    	for(int i = 0; i < len; i++) {
+    		// 마지막 값
+    		if(i == len-1) {
+    			if(hex2Decimal(String.valueOf(str.charAt(i))) < 5) {
+    				return true;
+    			}
+    		} 
+    		// 0 이 아니면 false
+    		else {
+    			if(hex2Decimal(String.valueOf(str.charAt(i))) > 0) {
+    				return false;
+    			}
+    		}    		    		
+    	}
+    	
+    	return false;
+    }
+    
+    
+    /**
+     * 검증을 위한 임시 블록 세팅
+     * 
+     * @param map
+     */
+	public void setTempBlock(HashMap<String, String> map) {
+		BufferedWriter bw;
+		StringBuffer sb = new StringBuffer();
+		
+		// hashed,word,merge
+		sb.append(map.get("hashed"));
+		sb.append("," + map.get("word"));
+		sb.append("," + map.get("merge"));
+		
+		// 파일을 생성
+		try {
+			bw = new BufferedWriter(
+					new OutputStreamWriter(
+					new FileOutputStream(
+						"c:/steelj/temp/block", false),	// true to append 
+						StandardCharsets.UTF_8));	// set encoding utf-8
+			
+			bw.write(sb.toString());
+			bw.close();
+		}catch(IOException e){
+			LOGGER.error("setTempBlock : " + e.getMessage());
+		}	
+	}
+	
+	
+	/**
+     * Hash 값을 가져온다
+     * 
+     * @param map
+     */
+	public String getHashed() {
+		BufferedReader inFiles = null;
+		String hashed = "";
+		
+		try {
+			inFiles = new BufferedReader(
+					new InputStreamReader(
+					new FileInputStream("c:/steelj/wallet/id"), "UTF8"));
+			
+			String line = "";
+			while((line = inFiles.readLine()) != null) {
+				if(line.trim().length() > 0) {
+					hashed = "";
+				}
+			}
+			
+			inFiles.close();							
+		} catch (Exception e) {
+			LOGGER.error("getHashed : " + e.getMessage());
+			return null;
+		}
+		
+		return hashed;
+	}
+	
+	
+	/**
+	 * Hex 값을 Decimal로 변환
+	 * @param s
+	 * @return
+	 */
+	public int hex2Decimal(String s) {
+        String digits = "0123456789ABCDEF";
+        s = s.toUpperCase();
+        int val = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            int d = digits.indexOf(c);
+            val = 16*val + d;
+        }
+        return val;
+    }
+	
+	
+	/**
+	 * 랜덤 워드
+	 * 
+	 * @param wordLength
+	 * @return
+	 */
+	String generateRandomWord(int wordLength) {
+	    Random r = new Random(); // Intialize a Random Number Generator with SysTime as the seed
+	    StringBuilder sb = new StringBuilder(wordLength);
+	    for(int i = 0; i < wordLength; i++) { // For each letter in the word
+	        char tmp = (char) ('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
+	        sb.append(tmp); // Add it to the String
+	    }
+	    return sb.toString();
+	}
 }
