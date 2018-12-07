@@ -127,6 +127,70 @@ public class CryptoModule {
 	
 	
 	/**
+	 * 제네시스 블록으로 초기화를 수행한다
+	 */
+	public HashMap<String, Object> setGenesisBlock() {
+		BufferedReader inFiles = null;
+		HashMap<String, Object> map = null;
+		StringBuffer sb = new StringBuffer();
+		
+		try {
+			inFiles = new BufferedReader(
+					new InputStreamReader(
+					new FileInputStream("c:/steelj/genesis.json"), "UTF8"));
+			
+			String line = "";
+			while((line = inFiles.readLine()) != null) {
+				if(line.trim().length() > 0) {
+					sb.append(line.toString());
+				}
+			}
+			
+			inFiles.close();
+			
+			// sb 값으로 json을 세팅한다
+			
+		} catch (Exception e) {
+			LOGGER.error("getHashed : " + e.getMessage());			
+		}		
+		
+		
+
+		
+		return null;
+	}
+	
+	
+	/**
+     * 예전 블록의 정보를 가져온다
+     * 블록이 없다면, Genesis 블록의 정보를 가져온다
+     * 
+     * @param map
+     */
+	public void getBlockInfo(HashMap<String, String> map) {
+		BufferedReader inFiles = null;
+		String hashed = "";
+		
+		try {
+			inFiles = new BufferedReader(
+					new InputStreamReader(
+					new FileInputStream("c:/steelj/wallet/id"), "UTF8"));
+			
+			String line = "";
+			while((line = inFiles.readLine()) != null) {
+				if(line.trim().length() > 0) {
+					hashed = "";
+				}
+			}
+			
+			inFiles.close();							
+		} catch (Exception e) {
+			LOGGER.error("getHashed : " + e.getMessage());			
+		}		
+	}
+	
+	
+	/**
      * Hash 값을 가져온다
      * 
      * @param map
