@@ -1,6 +1,8 @@
 package com.tistory.needjarvis.web;
 
 
+import java.util.HashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.tistory.needjarvis.module.CryptoModule;
 import com.tistory.needjarvis.module.MiningModule;
 import com.tistory.needjarvis.service.WalletService;
-
+import com.tistory.needjarvis.vo.AddressVO;
+import com.tistory.needjarvis.vo.IDVO;
 
 
 /**
@@ -35,6 +38,9 @@ public class MiningController {
 	@Autowired
 	private CryptoModule cryptoModule;
 	
+	@Autowired
+	private WalletService walletService;
+	
 	
 	/**
 	 * 마이닝 페이지 호출
@@ -46,8 +52,6 @@ public class MiningController {
 	public String mining(Model model) {
 		
 		model.addAttribute("isMining", miningFlag);
-		
-		
 		
 		return "mining";
 	}
@@ -65,12 +69,27 @@ public class MiningController {
 		miningFlag = true;
 		
 		// 마이닝을 수행한다.
-		String hashed = cryptoModule.getHashed();
-		module = new MiningModule(hashed);
-		module.start();
+		String no = cryptoModule.getHashed();
+		String msg = "";
+		
+		IDVO vo = walletService.getIDInfo();
+		HashMap<String, AddressVO> map = vo.getAddressMap();
+		String address = "";
+				
+		for(String _address : map.keySet()) {
+			address =  map.get(_address).getAddress();
+			break;
+		}
+		
+		if(address.trim().length() > 0) {
+			module = new MiningModule(no, address);
+			module.start();
+		} else {
+			msg = "address not found.";
+		}
 		
 		model.addAttribute("isMining", miningFlag);
-		model.addAttribute("hashed", hashed);
+		model.addAttribute("msg", msg);
 		
 		return "jsonView";
 	}
@@ -106,9 +125,8 @@ public class MiningController {
 	 */
 	@RequestMapping(value = "/mining/status", method = RequestMethod.GET)
 	public String status(Model model) {
-		
-		
-		// 마이닝의 레벨을 가져온다.
+		// 마이닝 상태값을 가져온다.
+		// sequence, 블록당 채굴 시간
 		
 		return "jsonView";
 	}	

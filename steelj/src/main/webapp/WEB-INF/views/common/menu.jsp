@@ -2,13 +2,13 @@
     pageEncoding="UTF-8"%>
 	<ul class="sidebar navbar-nav">
         <li class="nav-item active">
-          <a class="nav-link" href="index.html">
+          <a class="nav-link" href="main">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
           </a>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="login" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-fw fa-user"></i>
             <span>User</span>
           </a>
@@ -28,19 +28,25 @@
           </div>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="charts.html">
+          <a class="nav-link" href="transfer">
             <i class="fas fa-fw fa-money-check"></i>
             <span>Transactions</span></a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="holder">
+            <i class="fas fa-fw fa-money-bill"></i>
+            <span>Holder</span>
+          </a>
+        </li>
+        <!-- <li class="nav-item">
           <a class="nav-link" href="tables.html">
             <i class="fas fa-fw fa-money-bill"></i>
             <span>Money Transfer</span>
           </a>
-        </li>
-        <li class="nav-item">
+        </li> -->
+        <!-- <li class="nav-item">
           <a class="nav-link" href="tables.html">
             <i class="fas fa-fw fa-user"></i>
             <span>Search Job</span></a>
-        </li>
+        </li> -->
       </ul>

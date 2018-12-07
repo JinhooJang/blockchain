@@ -25,7 +25,7 @@ import com.tistory.needjarvis.vo.IDVO;
  * ID와 계좌를 관리하는 콘트롤러
  * 
  * @author jinhoo.jang
- * @since 2018.08.27
+ * @since 2018.10.27
  */
 @Controller
 public class WalletController {

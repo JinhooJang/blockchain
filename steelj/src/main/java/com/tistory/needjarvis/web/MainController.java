@@ -11,9 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import com.tistory.needjarvis.service.PeerService;
+import com.tistory.needjarvis.module.BlockModule;
+import com.tistory.needjarvis.module.TransModule;
 import com.tistory.needjarvis.service.WalletService;
 import com.tistory.needjarvis.vo.AddressVO;
 import com.tistory.needjarvis.vo.IDVO;
@@ -23,7 +23,7 @@ import com.tistory.needjarvis.vo.IDVO;
  * 피어를 관리하는 클래스
  * 
  * @author jinhoo.jang
- * @since 2018.08.10
+ * @since 2018.10.10
  */
 @Controller
 public class MainController {
@@ -32,6 +32,12 @@ public class MainController {
 	
 	@Autowired
 	private WalletService walletService;
+	
+	@Autowired
+	private BlockModule blockModule;
+	
+	@Autowired
+	private TransModule transModule;
 	
 	
 	/**
@@ -43,7 +49,11 @@ public class MainController {
 	 */
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
 	public String main(HttpServletRequest request, Model model) {
+		
 		model.addAttribute("request", "main");
+		// 메인은 10건씩만 가져온다
+		model.addAttribute("blockResult", blockModule.getBlockList(true));
+		model.addAttribute("transResult", transModule.getTransList(true));
 		
 		return "main";
 	}

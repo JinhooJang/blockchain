@@ -10,26 +10,36 @@ import java.util.HashMap;
  * @since 2018.12.05
  */
 public class MiningModule extends Thread {
-	private String hashed;
+	private String no;
+	private String addr;
 	private CryptoModule crypto;
 	private boolean executeFlag = true;
 	
-	public MiningModule(String hashed) {
-		this.hashed = hashed;
+	public MiningModule(String no, String addr) {
+		this.no = no;
+		this.addr = addr;
 		crypto = new CryptoModule();
 	}
 	
 	public void run() {
-		int blockSeq = 0;
+		int blockSeq = Integer.parseInt(no);
+		
 		// 정답을 위한 해시작업
 		while (executeFlag) {
-			// 예전 블록의 정보를 가져온다
+			long startTime = System.currentTimeMillis();
 			
+			// 예전 블록의 정보를 가져온다			
+			HashMap<String, Object> bfInfo = crypto.getBlockInfo(String.valueOf(blockSeq));			
+			HashMap<String, String> map = mining((String)bfInfo.get("hashed"));
 			
-			HashMap<String, String> map = mining();
+			long endTime = System.currentTimeMillis();
+			blockSeq++;
 			
-			System.out.println("block json=> " + crypto.setBlockJson(map));
-			// 채굴이 되었다면 기록, 일정이상 시간이 걸렸으면 마스터 계정에 보낸다
+			// 블록 생성
+			crypto.setBlockJson(map, blockSeq, (endTime-startTime));
+			
+			// 시퀀스값 기록
+			crypto.setSequence(blockSeq);
 		}
     }
 	
@@ -37,7 +47,7 @@ public class MiningModule extends Thread {
 	/**
 	 * 마이닝
 	 */
-	public HashMap<String, String> mining() {
+	public HashMap<String, String> mining(String hashed) {
 		HashMap<String, String> map = new HashMap<String, String>(); 
 		boolean flag = true;
 				
@@ -52,16 +62,23 @@ public class MiningModule extends Thread {
 				merge = crypto.sha256(hashed + word);
 				flag = crypto.isCorrect(merge); 
 				
-				System.out.println(merge + "=>" + crypto.isCorrect(merge) + " " + executeFlag);				
+				if(flag) {
+					System.out.println(merge + " " + executeFlag);
+				}
+				
 				Thread.sleep(100);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} while(!flag && executeFlag);
 		
+		
 		map.put("word", word);
 		map.put("merge", merge);
-		map.put("hashed", hashed);
+		map.put("hashed", merge);
+		map.put("reward", "5");
+		map.put("miner", addr);
+		map.put("age", crypto.getDate());
 		
 		return map;
 	}

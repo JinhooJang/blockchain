@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tistory.needjarvis.module.BlockModule;
 import com.tistory.needjarvis.module.CryptoModule;
+import com.tistory.needjarvis.module.TransModule;
 
 
 
@@ -21,43 +22,28 @@ import com.tistory.needjarvis.module.CryptoModule;
  * @since 2018.12.07
  */
 @Controller
-public class BlockController {
+public class TransactionController {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(BlockController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionController.class);
 	
 	@Autowired
 	private CryptoModule cryptoModule;
 	
 	@Autowired
-	private BlockModule blockModule;
+	private TransModule transModule;
 	
 	
 	/**
-	 * 블록 페이지 호출
+	 * 트랜잭션 페이지 호출
 	 * 
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "/block", method = RequestMethod.GET)
-	public String block(Model model) {
+	@RequestMapping(value = "/transfer", method = RequestMethod.GET)
+	public String transfer(Model model) {
 		
-		model.addAttribute("result", blockModule.getBlockList(false));
+		model.addAttribute("result", transModule.getTransList(false));
 		
-		return "block";
-	}
-	
-	
-	/**
-	 * 블록 페이지 호출
-	 * 
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value = "/block/genesis", method = RequestMethod.GET)
-	public String genesis(Model model) {
-		boolean genesis = cryptoModule.setGenesisBlock();
-		model.addAttribute("genesis", genesis);
-		
-		return "jsonView";
+		return "transfer";
 	}
 }

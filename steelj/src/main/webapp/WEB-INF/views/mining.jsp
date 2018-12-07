@@ -6,6 +6,39 @@
   <head>
     <!-- header -->
     <jsp:include flush="false" page="./common/header.jsp"/>
+    
+    <script>
+    var mining = false;
+	$( document ).ready(function() {
+		$('#startBtn').click(function(){
+			$.ajax({
+		        url: "http://localhost:8080/steelj/mining/start",
+		        type: 'GET',
+		        dataType: 'json', // added data type
+		        success: function(data) {
+		        	alert(data.isMining);
+		        	
+		        	$('#mining-status').text("mining : " + data.isMining);
+		        	//alert(data.account.address);
+		       	}
+	        });
+		});
+		
+		$('#endBtn').click(function(){
+			$.ajax({
+		        url: "http://localhost:8080/steelj/mining/end",
+		        type: 'GET',
+		        dataType: 'json', // added data type
+		        success: function(data) {
+		        	alert(data.isMining);
+		        	
+		        	$('#mining-status').text("mining : " + data.isMining);
+		        	//alert(data.account.address);
+		       	}
+	        });
+		});
+	});
+	</script>
   </head>
 
   <body id="page-top">
@@ -30,15 +63,24 @@
             <li class="breadcrumb-item active">Mining Status</li>
           </ol>
      
-          <!-- DataTables Example -->
-          <div class="card mb-3">
-            <div class="card-header">
-              <i class="fas fa-table"></i>
-              Block</div>
-            <div class="card-body">
-              mining : ${isMining}
-            </div>            
-          </div>
+          <div class="col-md-4">
+			<div class="card my-4">
+	            <h5 class="card-header">Mining</h5>
+	            <div class="card-body">
+					<div class="input-group">
+		                <span class="input-group-btn">
+		                  <button class="btn btn-secondary" id="startBtn" type="button">start</button>
+		                  <button class="btn btn-secondary" id="endBtn" type="button">end</button>
+		                </span>
+		            </div>
+		            
+		            <br>
+		            <div id="mining-status" class="input-group">
+		               mining : ${isMining}
+		            </div>
+		        </div>
+			</div>
+			</div>			
 
         </div>
         <!-- /.container-fluid -->
@@ -47,7 +89,7 @@
         <footer class="sticky-footer">
           <div class="container my-auto">
             <div class="copyright text-center my-auto">
-              <span>Copyright Â© Steel 2018</span>
+              <span>Copyright © Steel 2018</span>
             </div>
           </div>
         </footer>
