@@ -193,7 +193,6 @@ public class CryptoModule {
 	 * @param map
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public String setBlockJson(HashMap<String, String> map) {
 		JSONObject obj = new JSONObject();
 		JSONObject headerObj = new JSONObject();
