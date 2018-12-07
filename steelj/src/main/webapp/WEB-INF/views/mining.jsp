@@ -25,9 +25,9 @@
           <!-- Breadcrumbs-->
           <ol class="breadcrumb">
             <li class="breadcrumb-item">
-              <a href="#">Dashboard</a>
+              <a href="#">Blocks</a>
             </li>
-            <li class="breadcrumb-item active">Mining</li>
+            <li class="breadcrumb-item active">Mining Status</li>
           </ol>
      
           <!-- DataTables Example -->

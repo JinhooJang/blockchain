@@ -13,6 +13,7 @@ import java.util.Random;
 public class MiningModule extends Thread {
 	private String hashed;
 	private CryptoModule crypto;
+	private boolean executeFlag = true;
 	
 	public MiningModule(String hashed) {
 		this.hashed = hashed;
@@ -37,26 +38,40 @@ public class MiningModule extends Thread {
 				
 		String word = "";
 		String merge = "";		
-				
-		do {
-			try {
-				word = crypto.generateRandomWord(30);
-				merge = crypto.sha256(hashed + word);
-				
-				//System.out.println(hashed + " " + solve + " " + merge);
-				flag = crypto.isCorrect(merge); 
-				
-				System.out.println(merge + "=>" + crypto.isCorrect(merge));				
-				Thread.sleep(100);				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} while(!flag);
-		
-		map.put("word", word);
-		map.put("merge", merge);
-		map.put("hashed", hashed);
+		 	
+		while (executeFlag) {
+			map = new HashMap<String, String>(); 
+			
+			do {
+				try {
+					word = crypto.generateRandomWord(30);
+					merge = crypto.sha256(hashed + word);
+					flag = crypto.isCorrect(merge); 
+					
+					System.out.println(merge + "=>" + crypto.isCorrect(merge) + " " + executeFlag);				
+					Thread.sleep(100);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} while(!flag && executeFlag);
+			
+			map.put("word", word);
+			map.put("merge", merge);
+			map.put("hashed", hashed);
+			
+			System.out.println("block json=> " + crypto.setBlockJson(map));
+			
+			map = null;
+		}
 		
 		return map;
-	}	
+	}
+	
+	
+	/**
+	 * 플래그값을 종료로 변환한다.
+	 */
+	public void endFlag() {
+		executeFlag = false;
+	}
 }

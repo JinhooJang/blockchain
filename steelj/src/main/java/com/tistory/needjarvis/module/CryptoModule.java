@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -153,6 +154,57 @@ public class CryptoModule {
 		}
 		
 		return hashed;
+	}
+	
+	
+	/**
+     * 블록 생성 메소드 (JSON 구조)
+     * 
+     * @param map
+     */
+	public void setValidBlock(HashMap<String, String> map) {
+		BufferedWriter bw;
+		StringBuffer sb = new StringBuffer();
+		
+		// hashed,word,merge
+		sb.append(map.get("hashed"));
+		sb.append("," + map.get("word"));
+		sb.append("," + map.get("merge"));
+		
+		// 파일을 생성
+		try {
+			bw = new BufferedWriter(
+					new OutputStreamWriter(
+					new FileOutputStream(
+						"c:/steelj/temp/block", false),	// true to append 
+						StandardCharsets.UTF_8));	// set encoding utf-8
+			
+			bw.write(sb.toString());
+			bw.close();
+		}catch(IOException e){
+			LOGGER.error("setTempBlock : " + e.getMessage());
+		}	
+	}
+	
+	
+	/**
+	 * 맵 데이터를 JSON 구조로 변경한다
+	 * 
+	 * @param map
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public String setBlockJson(HashMap<String, String> map) {
+		JSONObject obj = new JSONObject();
+		JSONObject headerObj = new JSONObject();
+		
+		headerObj.put("hashed", (String)map.get("hashed"));
+		headerObj.put("word", (String)map.get("word"));
+		headerObj.put("merge", (String)map.get("merge"));
+		
+		obj.put("header", headerObj);
+		
+		return obj.toJSONString();
 	}
 	
 	

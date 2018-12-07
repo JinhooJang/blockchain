@@ -16,7 +16,7 @@ import com.tistory.needjarvis.service.WalletService;
 
 
 /**
- * 블록을 관리하는 클래스
+ * 마이닝을 관리하는 클래스
  * 
  * @author jinhoo.jang
  * @since 2018.12.04
@@ -29,6 +29,8 @@ public class MiningController {
 	private boolean miningFlag = false;
 	
 	public String hashing;
+	
+	public MiningModule module = null; 
 	
 	@Autowired
 	private CryptoModule cryptoModule;
@@ -50,6 +52,7 @@ public class MiningController {
 		return "mining";
 	}
 	
+	
 	/**
 	 * 마이닝을 시작한다.
 	 * 
@@ -63,7 +66,7 @@ public class MiningController {
 		
 		// 마이닝을 수행한다.
 		String hashed = cryptoModule.getHashed();
-		MiningModule module = new MiningModule(hashed);		
+		module = new MiningModule(hashed);
 		module.start();
 		
 		model.addAttribute("isMining", miningFlag);
@@ -72,6 +75,27 @@ public class MiningController {
 		return "jsonView";
 	}
 	
+	
+	/**
+	 * 마이닝을 종료한다.
+	 * 
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/mining/end", method = RequestMethod.GET)
+	public String end(Model model) {
+		LOGGER.info("finish mine!!!");
+		miningFlag = false;
+		
+		// 마이닝에 종료 값을 전달한다.
+		if(module.isAlive()) {
+			module.endFlag();
+		}
+		
+		model.addAttribute("isMining", miningFlag);		
+		
+		return "jsonView";
+	}
 	
 	
 	/**
