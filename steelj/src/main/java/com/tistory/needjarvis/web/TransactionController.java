@@ -1,6 +1,8 @@
 package com.tistory.needjarvis.web;
 
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +29,6 @@ public class TransactionController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionController.class);
 	
 	@Autowired
-	private CryptoModule cryptoModule;
-	
-	@Autowired
 	private TransModule transModule;
 	
 	
@@ -39,11 +38,38 @@ public class TransactionController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "/transfer", method = RequestMethod.GET)
-	public String transfer(Model model) {
+	@RequestMapping(value = "/transaction-list", method = RequestMethod.GET)
+	public String transactionList(Model model) {
 		
 		model.addAttribute("result", transModule.getTransList(false));
 		
 		return "transfer";
+	}
+	
+	
+	/**
+	 * 코인 전송, temp/transfer 파일에 기록
+	 * 
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/transfer", method = RequestMethod.GET)
+	public String transfer(HttpServletRequest request, Model model) {
+		String from = (String)request.getParameter("from");
+		String to = (String)request.getParameter("to");
+		String stlj = (String)request.getParameter("stlj");
+		String memo = (String)request.getParameter("memo").replaceAll(",", " ");
+		
+		LOGGER.info(from + "=>" + to + " " + stlj);
+		
+		model.addAttribute("from", from);
+		model.addAttribute("to", to);
+		model.addAttribute("stlj", stlj);
+		model.addAttribute("memo", memo);
+		
+		// 코인 전송 
+		model.addAttribute("success", transModule.transfer(from, to, stlj, memo));
+				
+		return "jsonView";
 	}
 }

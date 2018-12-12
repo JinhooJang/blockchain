@@ -8,6 +8,34 @@
   <head>
     <!-- header -->
     <jsp:include flush="false" page="./common/header.jsp"/>
+    <script>
+    $( document ).ready(function() {
+   		$.ajax({
+	        url: "http://localhost:8080/steelj/wallet/get-address",
+	        type: 'GET',
+	        dataType: 'json', // added data type
+	        success: function(data) {
+	        	$('#from_val').val(data.address);
+	        	//alert(data.account.address);
+	       	}
+        });
+   		
+   		$('#transferBtn').click(function(){
+   			var param = "from=" + $('#from_val').val() + "&to=" + $('#to_val').val() 
+   				+ "&stlj=" + $('#stlj_val').val() + "&memo=" + $('#memo_val').val();
+   			
+			$.ajax({
+		        url: "http://localhost:8080/steelj/transfer",
+		        type: 'GET',
+		        data : param,
+		        dataType: 'json', // added data type
+		        success: function(data) {
+		        	alert(data.success);		        	
+		       	}
+	        });
+		});
+    });
+   	</script>
   </head>
 
   <body id="page-top">
@@ -28,7 +56,7 @@
           <ol class="breadcrumb">
             <li class="breadcrumb-item">
               <a href="#">Transactions</a>
-            </li>            
+            </li>
           </ol>
           
         <!-- 전송 -->
@@ -41,7 +69,7 @@
 	            			<td>from</td>
 	            			<td>
 								<div class="input-group">
-									<input type="text" id="address_val" class="form-control" >								                
+									<input type="text" id="from_val" class="form-control" >								                
 					            </div>
 				            </td>
 			            </tr>
@@ -49,7 +77,7 @@
 	            			<td>to</td>
 	            			<td>
 								<div class="input-group">
-									<input type="text" id="address_val" class="form-control" >								                
+									<input type="text" id="to_val" class="form-control" >								                
 					            </div>
 				            </td>
 			            </tr>
@@ -57,7 +85,15 @@
 	            			<td>STLJ</td>
 	            			<td>
 								<div class="input-group">
-									<input type="text" id="address_val" class="form-control" >								                
+									<input type="text" id="stlj_val" class="form-control" >								                
+					            </div>
+				            </td>
+			            </tr>
+			            <tr>
+	            			<td>MEMO</td>
+	            			<td>
+								<div class="input-group">
+									<input type="text" id="memo_val" class="form-control" >								                
 					            </div>
 				            </td>
 			            </tr>
@@ -65,7 +101,7 @@
 		            </br>
 		            <div class="input-group">
 		                <span class="input-group-btn">
-		                  <button class="btn btn-secondary" id="createBtn" type="button">transfer</button>
+		                  <button class="btn btn-secondary" id="transferBtn" type="button">transfer</button>
 		                </span>
 		            </div>
 		        </div>

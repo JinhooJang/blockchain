@@ -28,7 +28,7 @@
           </div>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="transfer">
+          <a class="nav-link" href="transaction-list">
             <i class="fas fa-fw fa-money-check"></i>
             <span>Transactions</span></a>
         </li>

@@ -38,6 +38,9 @@ public class MiningModule extends Thread {
 			// 블록 생성
 			crypto.setBlockJson(map, blockSeq, (endTime-startTime));
 			
+			// temp의 블록 제거
+			crypto.deleteTemp();
+			
 			// 시퀀스값 기록
 			crypto.setSequence(blockSeq);
 		}

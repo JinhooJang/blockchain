@@ -2,6 +2,7 @@ package com.tistory.needjarvis.module;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -159,9 +160,9 @@ public class CryptoModule {
 			// 헤더 세팅
 			block.put("header", genesisHeader((JSONObject)obj.get("header")));
 			// 전송 세팅
-			block.put("transfer", genesisTransfer((JSONObject)obj.get("transfer")));
+			block.put("transfer", genesisTransfer((JSONArray)obj.get("transfer")));
 			// 렛저 세팅
-			block.put("ledger", genesisLedger((JSONObject)obj.get("transfer")));
+			block.put("ledger", genesisLedger((JSONArray)obj.get("transfer")));
 						
 			bw.write(block.toJSONString());
 			bw.close();			
@@ -257,6 +258,18 @@ public class CryptoModule {
 	
 	
 	/**
+	 * Temp Data 제거
+	 */
+	public void deleteTemp() {
+		File temp = new File("c:/steelj/temp/transfer");
+		
+		if(temp != null && temp.isFile()) {
+			temp.delete();
+		}
+	}
+	
+	
+	/**
 	 * 시퀀스 기록
 	 * @param blockSeq
 	 */
@@ -313,62 +326,73 @@ public class CryptoModule {
 	 * 전송에는 from, to, balance, memo가 있어야 함
 	 * 
 	 * @param tranfer
-	 * @return
+	 * @return List<HashMap<String, String>>
 	 */
-	public HashMap<String, String> genesisTransfer(JSONObject tranfer) {
-		HashMap<String, String> rtnMap = new HashMap<String, String> ();
+	public List<HashMap<String, String>> genesisTransfer(JSONArray tranfer) {
+		List<HashMap<String, String>> rtnList = new ArrayList<HashMap<String, String>> ();
+		HashMap<String, String> map = new HashMap<String, String> ();
 		
-		for(String col : transCols) {
-			rtnMap.put(col, (String)tranfer.get(col));
+		for(int i = 0; i < tranfer.size(); i++) {
+			JSONObject transObj = (JSONObject) tranfer.get(i);
+			
+			for(String col : transCols) {
+				map.put(col, (String)transObj.get(col));
+			}
 		}
 		
-		return rtnMap;		
+		rtnList.add(map);
+		
+		return rtnList;		
 	}
 	
 	
 	/**
 	 * 최초 블록을 읽어서 Ledger를 생성한다
 	 * 
-	 * @param ledger
+	 * @param ledgers
 	 * @return
 	 */
-	public List<HashMap<String, String>> genesisLedger(JSONObject ledger) {
+	public List<HashMap<String, String>> genesisLedger(JSONArray ledgers) {
 		List<HashMap<String, String>> list 
 						= new ArrayList<HashMap<String, String>> ();
 		HashMap<String, String> item = new HashMap<String, String> ();
 		
 		// stlj를 from에서 제거하고, to에 증가시켜야 된다. from이 void일 경우, 제거를 시키지 않음.
-		int stlj = Integer.parseInt((String)ledger.get("stlj"));
-		String from = (String)ledger.get("from");
-		String to = (String)ledger.get("to");
-		int amount = 0;
-		
-		// from에서 제거한다, void일 경우 무시한다
-		if(!from.equals("void")) {
-			// balance가 있으면 값을 가져온다
-			if(balanceMap.containsKey(from)) {
-				amount = balanceMap.get(from) - stlj;
-				balanceMap.put(from, amount);
-				item.put("address", from);
-				item.put("balance", String.valueOf(amount));
-				list.add(item);
+		if(ledgers.size() > 0) {
+			JSONObject ledger = (JSONObject) ledgers.get(0);
+			
+			int stlj = Integer.parseInt((String)ledger.get("stlj"));
+			String from = (String)ledger.get("from");
+			String to = (String)ledger.get("to");
+			int amount = 0;
+			
+			// from에서 제거한다, void일 경우 무시한다
+			if(!from.equals("void")) {
+				// balance가 있으면 값을 가져온다
+				if(balanceMap.containsKey(from)) {
+					amount = balanceMap.get(from) - stlj;
+					balanceMap.put(from, amount);
+					item.put("address", from);
+					item.put("balance", String.valueOf(amount));
+					list.add(item);
+				}
 			}
+			
+			amount = 0;
+			item = new HashMap<String, String> ();
+			// to에서 증가시킨다.
+			if(balanceMap.containsKey(to)) {
+				amount = balanceMap.get(to) + stlj;
+			} else {
+				amount = stlj;
+			}
+			
+			balanceMap.put(to, amount);
+			item.put("address", to);
+			item.put("balance", String.valueOf(amount));
+			list.add(item);
 		}
 		
-		amount = 0;
-		item = new HashMap<String, String> ();
-		// to에서 증가시킨다.
-		if(balanceMap.containsKey(to)) {
-			amount = balanceMap.get(to) + stlj;
-		} else {
-			amount = stlj;
-		}
-		
-		balanceMap.put(to, amount);
-		item.put("address", to);
-		item.put("balance", String.valueOf(amount));
-		list.add(item);
-						
 		return list;
 	}
 	
@@ -380,15 +404,18 @@ public class CryptoModule {
 	 * @param miner
 	 * @return
 	 */
-	public HashMap<String, String> setTransfer(String reward, String miner) {
-		HashMap<String, String> rtnMap = new HashMap<String, String> ();
+	public List<HashMap<String, String>> setTransfer(String reward, String miner) {
+		List<HashMap<String, String>> rtnList = new ArrayList<HashMap<String, String>> ();
+		HashMap<String, String> map = new HashMap<String, String> ();
 		
-		// 우선 mining을 기록
-		rtnMap.put("from", "void");
-		rtnMap.put("to", miner);
-		rtnMap.put("stlj", reward);
-		rtnMap.put("memo","채굴 보상");
+		// 우선 mining을 기록한다.
+		map.put("from", "void");
+		map.put("to", miner);
+		map.put("stlj", reward);
+		map.put("memo","채굴 보상");
+		rtnList.add(map);
 		
+		// 채굴에 대한 잔고 변경
 		// to의 주소의 발란스를 증가시킨다
 		int balance = 0;
 		if(balanceMap.containsKey(miner)) {
@@ -399,7 +426,61 @@ public class CryptoModule {
 		LOGGER.info(miner + "=>" + balance);
 		balanceMap.put(miner, balance);
 		
-		return rtnMap;		 
+		// temp에 있는 트랜잭션을 처리
+		BufferedReader inFiles;
+		try {
+			inFiles = new BufferedReader(
+					new InputStreamReader(
+					new FileInputStream(
+							"c:/steelj/temp/transfer"), "UTF8"));
+			
+			String line = "";
+			while((line = inFiles.readLine()) != null) {
+				if(line.trim().length() > 0) {
+					map = new HashMap<String, String> ();
+					
+					// 0 from, 1 to, 2 stlj, 3 memo
+					String[] value = line.trim().split(",");
+					map.put("from", value[0]);
+					map.put("to", value[1]);
+					
+					// 값에 대한 정합성 체크, from과 to의 계좌 정보가 있어야 함
+					if(balanceMap.containsKey(value[0]) && balanceMap.containsKey(value[1])) {
+						if(balanceMap.get(value[0]) >= Integer.parseInt(value[2])) {
+							map.put("stlj", value[2]);
+							map.put("memo", value[3]);
+							
+							// to의 잔고 증가
+							balance = balanceMap.get(value[1]) + Integer.parseInt(value[2]);
+							LOGGER.info(value[1] + " " + balanceMap.get(value[1]) + "=>" + balance);
+							balanceMap.put(value[1], balance);
+							
+							// from의 잔고 감소
+							balance = balanceMap.get(value[0]) - Integer.parseInt(value[2]);
+							LOGGER.info(value[1] + " " + balanceMap.get(value[0]) + "=>" + balance);
+							balanceMap.put(value[0], balance);							
+						} 
+						// 잔고의 문제가 있을 경우
+						else {
+							map.put("stlj", "0");
+							map.put("memo", "전송 실패, 잔고 부족");
+						}
+					} else {
+						map.put("stlj", "0");
+						map.put("memo","전송 실패, 계좌 정보 오류");
+					}
+					
+					rtnList.add(map);
+				}
+			}
+			
+			inFiles.close();			
+			
+		} catch (Exception e) {
+			LOGGER.error("getBlockInfo : " + e.getMessage());			
+		}		
+		
+		return rtnList;		 
 	}
 	
 	

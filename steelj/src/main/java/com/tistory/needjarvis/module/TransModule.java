@@ -1,13 +1,18 @@
 package com.tistory.needjarvis.module;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -26,6 +31,7 @@ public class TransModule {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(TransModule.class);
 
+	final String NEWLINE = System.getProperty("line.separator");
 	
 	/**
      * 최근의 트랜잭션 정보를 리스트 형태로 가져온다
@@ -50,7 +56,6 @@ public class TransModule {
 			if(block.getName().equals("sequence"))
 				continue;
 			
-			blockItem = new HashMap<String, String> ();
 			sb = new StringBuffer();
 			
 			try {
@@ -70,19 +75,24 @@ public class TransModule {
 				
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(sb.toString());
-				JSONObject transfer = (JSONObject) obj.get("transfer");
+				JSONArray transfer = (JSONArray) obj.get("transfer");
 				JSONObject header = (JSONObject) obj.get("header");
 				
-				blockItem.put("from", (String)transfer.get("from"));
-				blockItem.put("to", (String)transfer.get("to"));
-				blockItem.put("stlj", (String)transfer.get("stlj"));
-				blockItem.put("memo", (String)transfer.get("memo"));
-				
-				if(header.containsKey("age")) {
-					blockItem.put("age", formatDate((String)header.get("age")));
+				for(int i = 0; i < transfer.size(); i++) {
+					JSONObject transfObj = (JSONObject) transfer.get(i);
+					blockItem = new HashMap<String, String> ();
+					
+					blockItem.put("from", (String)transfObj.get("from"));
+					blockItem.put("to", (String)transfObj.get("to"));
+					blockItem.put("stlj", (String)transfObj.get("stlj"));
+					blockItem.put("memo", (String)transfObj.get("memo"));
+					
+					if(header.containsKey("age")) {
+						blockItem.put("age", formatDate((String)header.get("age")));
+					}
+					
+					result.add(blockItem);
 				}
-				
-				result.add(blockItem);
 			} catch (Exception e) {
 				e.printStackTrace();
 				LOGGER.error("getBlockInfo : " + e.getMessage());			
@@ -92,6 +102,40 @@ public class TransModule {
 		}		
 		
 		return result;
+	}
+	
+	
+	/**
+	 * 코인을 전송하는 메소드, 블록이 아닌 temp(csv 형태)에 우선 기록하고
+	 * 다음 블록이 생성될 경우 적합성 여부를 확인 한 후 블록에 최종 기록
+	 * 
+	 * @param from
+	 * @param to
+	 * @param stlj
+	 * @param memo
+	 * @return
+	 */
+	public boolean transfer(String from, String to, String stlj, String memo) {
+		BufferedWriter bw;
+		
+		try {			
+			bw = new BufferedWriter(
+					new OutputStreamWriter(
+					new FileOutputStream(
+						"c:/steelj/temp/transfer", true),	// true to append 
+						StandardCharsets.UTF_8));	// set encoding utf-8
+			
+			// 그냥 단순히 기록
+			bw.write(from + "," + to + "," + stlj + "," + memo + NEWLINE);
+			bw.close();
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			LOGGER.error("transfer : " + e.getMessage());
+			return false;
+		}
+		
+		return true;
 	}
 	
 	
