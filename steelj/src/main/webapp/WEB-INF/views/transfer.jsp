@@ -31,6 +31,47 @@
             </li>            
           </ol>
           
+        <!-- 전송 -->
+		<div class="col-md-8">
+			<div class="card my-8">
+	            <h5 class="card-header">transfer coin</h5>
+	            <div class="card-body">
+	            	<table width="800px;">
+	            		<tr>
+	            			<td>from</td>
+	            			<td>
+								<div class="input-group">
+									<input type="text" id="address_val" class="form-control" >								                
+					            </div>
+				            </td>
+			            </tr>
+			            <tr>
+	            			<td>to</td>
+	            			<td>
+								<div class="input-group">
+									<input type="text" id="address_val" class="form-control" >								                
+					            </div>
+				            </td>
+			            </tr>
+			            <tr>
+	            			<td>STLJ</td>
+	            			<td>
+								<div class="input-group">
+									<input type="text" id="address_val" class="form-control" >								                
+					            </div>
+				            </td>
+			            </tr>
+					</table>
+		            </br>
+		            <div class="input-group">
+		                <span class="input-group-btn">
+		                  <button class="btn btn-secondary" id="createBtn" type="button">transfer</button>
+		                </span>
+		            </div>
+		        </div>
+			</div>
+		</div>			
+        </br>
           <!-- DataTables Example -->
           <div class="card mb-3">
             <div class="card-header">
