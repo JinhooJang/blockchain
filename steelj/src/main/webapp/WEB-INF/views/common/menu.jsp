@@ -27,6 +27,17 @@
             <a class="dropdown-item" href="block">Block Status</a>                        
           </div>
         </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-fw fa-industry"></i>
+            <span>Search Job</span></a>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+            <a class="dropdown-item" href="job-seeker">Job Seeker</a>
+            <a class="dropdown-item" href="company">Company</a>
+            <a class="dropdown-item" href="job-search">Job Search</a>
+          </div>
+        </li>
         <li class="nav-item">
           <a class="nav-link" href="transaction-list">
             <i class="fas fa-fw fa-money-check"></i>
