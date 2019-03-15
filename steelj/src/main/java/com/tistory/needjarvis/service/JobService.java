@@ -41,7 +41,11 @@ public interface JobService {
 	
 	/**
 	 * 구직 활동
-	 * @param name
+	 * @param from
+	 * @param to
+	 * @param compNm
+	 * @param action
+	 * @return
 	 */
 	public boolean addJobSearch(String from, String to, String action);
 	

@@ -11,8 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.tistory.needjarvis.module.CryptoModule;
-import com.tistory.needjarvis.module.HolderModule;
 import com.tistory.needjarvis.service.JobService;
 
 

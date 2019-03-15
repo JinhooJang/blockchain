@@ -36,7 +36,7 @@ public class JobServiceImpl implements JobService {
 	
 	@Autowired
 	private CryptoModule cryptoModule;
-	
+		
 	
 	/**
 	 * 사용자 추가, csv 형태로 저장
@@ -204,9 +204,29 @@ public class JobServiceImpl implements JobService {
 		List<HashMap<String, Object>> rtnList 
 							= new ArrayList<HashMap<String, Object>> ();
 		
+		HashMap<String, String> COMPMAP = new HashMap<String, String> ();
+		
 		BufferedReader inFiles;
 		String[] temp = null;
 		HashMap<String, Object> map;
+		
+		try {
+			inFiles = new BufferedReader(
+				new InputStreamReader(
+				new FileInputStream("c:/steelj/job/company-list"), "UTF8"));
+		
+			String line = "";
+			while((line = inFiles.readLine()) != null) {
+				if(line.trim().length() > 0) {
+					temp = line.split(",");
+					COMPMAP.put(temp[1], temp[0]);
+				}
+			}
+			inFiles.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOGGER.error("get compnm : " + e.getMessage());			
+		}
 		
 		try {
 			inFiles = new BufferedReader(
@@ -221,6 +241,12 @@ public class JobServiceImpl implements JobService {
 					
 					if(temp[0].equals(address) || temp[1].equals(address)) {
 					
+						if(COMPMAP.containsKey(temp[1])) {
+							map.put("comp", COMPMAP.get(temp[1]));
+						} else if(COMPMAP.containsKey(temp[0])) {
+							map.put("comp", COMPMAP.get(temp[0]));
+						}
+						
 						// 인터뷰는 from과 to가 변환
 						if("interview".equals(temp[2])) {
 							map.put("from", temp[1]);

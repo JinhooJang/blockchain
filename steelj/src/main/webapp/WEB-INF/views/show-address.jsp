@@ -58,6 +58,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
+                      <th>company</th>
                       <th>from</th>
                       <th>to</th>
                       <th>action</th>
@@ -66,6 +67,10 @@
                   <tbody>
 	                  <c:forEach var="item" items="${result}">
 	                    <tr>
+	                      <td>
+		                      ${item.comp}
+		                      
+	                      </td>
 	                      <td>
 		                      <c:if test="${item.from eq address}">
 		                      	<b>${item.from}</b>
